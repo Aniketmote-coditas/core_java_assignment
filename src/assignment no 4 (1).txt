@@ -1,0 +1,178 @@
+1    mysql> create table customers(id int primary key, name varchar(50), age int, addess varchar(100), salary int);
+Query OK, 0 rows affected (0.28 sec)
+
+
+3    mysql> insert into customers values(1, "anikeet", 21, "pune", 15000),(2, "yash", 20, "mumbai", 13000),(3, "nikhil", 24, "pune", 10000),(4, "mukesh", 22, "mumbai", 14000),(5, "ani", 19, "pune", 11000);
+Query OK, 5 rows affected (0.06 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from customers;
++----+---------+------+--------+--------+
+| id | name    | age  | addess | salary |
++----+---------+------+--------+--------+
+|  1 | anikeet |   21 | pune   |  15000 |
+|  2 | yash    |   20 | mumbai |  13000 |
+|  3 | nikhil  |   24 | pune   |  10000 |
+|  4 | mukesh  |   22 | mumbai |  14000 |
+|  5 | ani     |   19 | pune   |  11000 |
++----+---------+------+--------+--------+
+
+2    mysql> create table orders(o_id int primary key,o_date date, id int, amount int, foreign key(id) references customers(id));
+Query OK, 0 rows affected (0.38 sec)
+
+mysql> insert into orders values(11, "2023-01-25", 2, 500),
+    -> (12, "2023-01-02", 1, 400),
+    -> (13, "2023-01-03", 3,300),
+    -> (14, "2023-01-21", 5, 200),
+    -> (15, "2023-01-09", 4, 600);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from orders;
++------+------------+------+--------+
+| o_id | o_date     | id   | amount |
++------+------------+------+--------+
+|   11 | 2023-01-25 |    2 |    500 |
+|   12 | 2023-01-02 |    1 |    400 |
+|   13 | 2023-01-03 |    3 |    300 |
+|   14 | 2023-01-21 |    5 |    200 |
+|   15 | 2023-01-09 |    4 |    600 |
++------+------------+------+--------+
+5 rows in set (0.00 sec)
+
+4     mysql> select c.id, c.name, o.amount, o.o_id from customers c inner join orders o on c.id=o.id;
++----+---------+--------+------+
+| id | name    | amount | o_id |
++----+---------+--------+------+
+|  1 | anikeet |    400 |   12 |
+|  2 | yash    |    500 |   11 |
+|  3 | nikhil  |    300 |   13 |
+|  4 | mukesh  |    600 |   15 |
+|  5 | ani     |    200 |   14 |
++----+---------+--------+------+
+5 rows in set (0.00 sec)
+
+5     mysql> select c.id, c.name, o.amount, o.o_date from customers c left join orders o on c.id=o.id;
++----+---------+--------+------------+
+| id | name    | amount | o_date     |
++----+---------+--------+------------+
+|  1 | anikeet |    400 | 2023-01-02 |
+|  2 | yash    |    500 | 2023-01-25 |
+|  3 | nikhil  |    300 | 2023-01-03 |
+|  4 | mukesh  |    600 | 2023-01-09 |
+|  5 | ani     |    200 | 2023-01-21 |
++----+---------+--------+------------+
+5 rows in set (0.00 sec)
+
+6    mysql> select c.id, c.name, o.amount, o.o_date from customers c right join orders o on c.id=o.id;
++------+---------+--------+------------+
+| id   | name    | amount | o_date     |
++------+---------+--------+------------+
+|    2 | yash    |    500 | 2023-01-25 |
+|    1 | anikeet |    400 | 2023-01-02 |
+|    3 | nikhil  |    300 | 2023-01-03 |
+|    5 | ani     |    200 | 2023-01-21 |
+|    4 | mukesh  |    600 | 2023-01-09 |
++------+---------+--------+------------+
+5 rows in set (0.00 sec)
+
+
+7      select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> left join orders
+    -> on customers.id = orders.id
+    -> union all
+    -> select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> right join orders
+    -> on customers.id = orders.id;
++------+---------+--------+------------+
+| id   | name    | amount | o_date     |
++------+---------+--------+------------+
+|    1 | anikeet |   NULL | NULL       |
+|    2 | yash    |    500 | 2023-01-25 |
+|    3 | nikhil  |    300 | 2023-01-03 |
+|    4 | mukesh  |    600 | 2023-01-09 |
+|    5 | ani     |    200 | 2023-01-21 |
+|    2 | yash    |    500 | 2023-01-25 |
+|    3 | nikhil  |    300 | 2023-01-03 |
+|    5 | ani     |    200 | 2023-01-21 |
+|    4 | mukesh  |    600 | 2023-01-09 |
++------+---------+--------+------------+
+
+8     mysql> select distinct c.name as name1, x.name as name2, c.addess from customers c, customers x where c.id<>x.id and c.addess=x.addess order by c.addess;
++---------+---------+--------+
+| name1   | name2   | addess |
++---------+---------+--------+
+| mukesh  | yash    | mumbai |
+| yash    | mukesh  | mumbai |
+| ani     | anikeet | pune   |
+| nikhil  | anikeet | pune   |
+| ani     | nikhil  | pune   |
+| anikeet | nikhil  | pune   |
+| nikhil  | ani     | pune   |
+| anikeet | ani     | pune   |
++---------+---------+--------+
+8 rows in set (0.00 sec)
+
+
+
+9    mysql> select c.id, c.name, o.amount, o.o_date from customers c join orders o;
++----+---------+--------+------------+
+| id | name    | amount | o_date     |
++----+---------+--------+------------+
+|  5 | ani     |    500 | 2023-01-25 |
+|  4 | mukesh  |    500 | 2023-01-25 |
+|  3 | nikhil  |    500 | 2023-01-25 |
+|  2 | yash    |    500 | 2023-01-25 |
+|  1 | anikeet |    500 | 2023-01-25 |
+|  5 | ani     |    400 | 2023-01-02 |
+|  4 | mukesh  |    400 | 2023-01-02 |
+|  3 | nikhil  |    400 | 2023-01-02 |
+|  2 | yash    |    400 | 2023-01-02 |
+|  1 | anikeet |    400 | 2023-01-02 |
+|  5 | ani     |    300 | 2023-01-03 |
+|  4 | mukesh  |    300 | 2023-01-03 |
+|  3 | nikhil  |    300 | 2023-01-03 |
+|  2 | yash    |    300 | 2023-01-03 |
+|  1 | anikeet |    300 | 2023-01-03 |
+|  5 | ani     |    200 | 2023-01-21 |
+|  4 | mukesh  |    200 | 2023-01-21 |
+|  3 | nikhil  |    200 | 2023-01-21 |
+|  2 | yash    |    200 | 2023-01-21 |
+|  1 | anikeet |    200 | 2023-01-21 |
+|  5 | ani     |    600 | 2023-01-09 |
+|  4 | mukesh  |    600 | 2023-01-09 |
+|  3 | nikhil  |    600 | 2023-01-09 |
+|  2 | yash    |    600 | 2023-01-09 |
+|  1 | anikeet |    600 | 2023-01-09 |
++----+---------+--------+------------+
+25 rows in set (0.00 sec)
+
+10   mysql> select * from customers c where salary in (select salary from customers where salary>10000);
++----+---------+------+--------+--------+
+| id | name    | age  | addess | salary |
++----+---------+------+--------+--------+
+|  1 | anikeet |   21 | pune   |  15000 |
+|  2 | yash    |   20 | mumbai |  13000 |
+|  4 | mukesh  |   22 | mumbai |  14000 |
+|  5 | ani     |   19 | pune   |  11000 |
++----+---------+------+--------+--------+
+4 rows in set (0.00 sec)
+
+
+11     mysql> create table cust_bkp as select * from customers;
+Query OK, 5 rows affected (0.23 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+12     mysql> select * from customer;
+ERROR 1146 (42S02): Table 'student.customer' doesn't exist
+mysql> select * from customers;
++----+---------+------+--------+--------+
+| id | name    | age  | addess | salary |
++----+---------+------+--------+--------+
+|  1 | anikeet |   21 | pune   |  16500 |
+|  2 | yash    |   20 | mumbai |  13000 |
+|  3 | nikhil  |   24 | pune   |  11000 |
+|  4 | mukesh  |   22 | mumbai |  15400 |
+|  5 | ani     |   19 | pune   |  11000 |
++----+---------+------+--------+--------+
+5 rows in set (0.00 sec)
