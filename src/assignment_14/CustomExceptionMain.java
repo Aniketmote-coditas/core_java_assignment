@@ -25,3 +25,11 @@ public class CustomExceptionMain {
 
     }
 }
+/*
+WELCOME TO THE BANK
+PLEASE ENTER 1 FOR DEPOSIT AND 2 FOR WITHDRAWAL
+2
+please enter the withdrawal amount
+6000
+The amount enter  is greater than balance
+*/
